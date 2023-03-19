@@ -1,15 +1,3 @@
-"""
-Pedro Ivo Vasconcelos - Engenharia de Controle e Automação - Escola de Engenharia UFMG
-Github: https://github.com/pedroivovasconcelos | Linkedin: https://www.linkedin.com/in/pedroivovasconcelos/
-
-Este código foi escrito em inglês, mas toda a sua doc está em português
-Para executar no ubuntu este código, use o terminal na pasta digitando $ sudo python shower.py
-
-Caso o pc não possua as bibliotecas, consiga acesso a internet e execute os seguintes códigos no terminal:
-pip install nidaqmx
-
-Documentação da NI-DAQmx: https://nidaqmx-python.readthedocs.io/en/latest/
-"""
 import time
 
 from board_controller import BoardController
