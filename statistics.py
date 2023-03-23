@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 
-from shower import BoardController
+from board_controller import BoardController
 
 
 class Statistics:

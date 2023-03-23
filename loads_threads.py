@@ -1,7 +1,7 @@
 import datetime
 import math
 import threading
-from shower import BoardController
+from board_controller import BoardController
 from write_data import WriteData
 
 
