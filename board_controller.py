@@ -26,7 +26,8 @@ class BoardController:
         self.rt_priority = rt_priority
         self.set_point = set_point
         self.period_ns = self.sampling_time
-        self.next_period = time.monotonic_ns()
+        self.start_time = time.monotonic_ns()
+        self.next_period = self.start_time
 
         self.voltage_read = 0
         self.voltage_set = 0
@@ -84,9 +85,11 @@ class BoardController:
 
     def do_real_time_task(self):
         self.voltage_read = self.ai_task_handle.read()
-        self.board_window.run_time.append(time.monotonic_ns() / 1e6)
+        self.voltage_set = self.board_window.voltage_slider.get()
+        self.ao_task_handle.write(self.voltage_set)
+        self.board_window.run_time.append((time.monotonic_ns() - self.start_time) / 1e6)
         self.board_window.voltage_read_history.append(self.voltage_read)
-        self.ao_task_handle.write(self.voltage_read * 0.5)
+        self.board_window.voltage_set_history.append(self.voltage_set)
 
     def get_time_left(self):
         return (self.next_period - time.monotonic_ns()) / 1e9

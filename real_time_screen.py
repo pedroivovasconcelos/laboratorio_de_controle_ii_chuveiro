@@ -21,31 +21,37 @@ class ControllerWindow:
         Label(self.controller_window, text="Controlador de chuveiro com mostrador"
                                            " em tempo real de temperatura e log").grid(column=0, row=0)
         plt.style.use('fivethirtyeight')
-        canvas = FigureCanvasTkAgg(plt.gcf(), master=self.controller_window)
+        width_px, height_px = 800, 600
+        dpi = 100
+        width_in = width_px / dpi
+        height_in = height_px / dpi
+        self.fig = plt.figure(figsize=(width_in, height_in), dpi=100)
+        canvas = FigureCanvasTkAgg(self.fig, master=self.controller_window)
         canvas.get_tk_widget().grid(column=0, row=1)
-        plt.gcf().subplots(1, 2)
-        self.ani = FuncAnimation(plt.gcf(), self.animate2, interval=1000, blit=False)
+        self.fig.subplots(1, 1)
+        self.ani = FuncAnimation(self.fig, self.animate, interval=200, blit=False, save_count=1000000)
         self.voltage_slider = Scale(self.controller_window, from_=0.0, to=10.0, length=800, tickinterval=0.1,
                                     orient=HORIZONTAL)
         self.voltage_slider.grid(column=0, row=2)
         self.voltage_slider.set(8.0)
 
-    def animate(self):
-        ax1, ax2 = plt.gcf().get_axes()
-        ax1.cla()
-        ax2.cla()
-        ax1.plot(self.run_time, self.voltage_set_history)
-        ax2.plot(self.run_time, self.voltage_read_history)
-
-    def animate2(self, _):
-        self.run_time.append((time.monotonic_ns() - self.start_time) / 1e9)
-        self.voltage_read_history.append(random.randint(0, 10))
+    def animate(self, _):
+        current_time = (time.monotonic_ns() - self.start_time) / 1e9
+        self.run_time.append(current_time)
         self.voltage_set_history.append(self.voltage_slider.get())
-        ax1, ax2 = plt.gcf().get_axes()
+        self.voltage_read_history.append(random.uniform(0, 10))
+        ax1 = self.fig.get_axes()[0]
         ax1.cla()
-        ax2.cla()
-        ax1.plot(self.run_time, self.voltage_set_history)
-        ax2.plot(self.run_time, self.voltage_read_history)
+        ax1.plot(self.run_time, self.voltage_set_history, label='Voltage Set', color='blue')
+        ax1.plot(self.run_time, self.voltage_read_history, label='Voltage Read', color='red')
+        ax1.set_ylim(0, 10)
+
+        if current_time <= 10:
+            ax1.set_xlim(0, 10)
+        else:
+            ax1.set_xlim(0, current_time)
+        ax1.set_xlabel('Time (s)')
+        ax1.legend(loc='upper right')
 
     def run(self):
         self.controller_window.mainloop()
