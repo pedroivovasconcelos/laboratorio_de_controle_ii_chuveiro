@@ -4,6 +4,7 @@ import time
 from ctypes import c_long
 import nidaqmx
 import numpy as np
+from real_time_screen import ControllerWindow
 
 
 class BoardController:
@@ -29,6 +30,9 @@ class BoardController:
 
         self.voltage_read = 0
         self.voltage_set = 0
+        self.board_window = ControllerWindow(voltage_read=self.voltage_read,
+                                             voltage_set=self.voltage_set)
+        self.board_window.run()
 
         self.start_cycle = np.zeros(number_of_samples, dtype=c_long)
         self.end_cycle = np.zeros(number_of_samples, dtype=c_long)
@@ -80,6 +84,8 @@ class BoardController:
 
     def do_real_time_task(self):
         self.voltage_read = self.ai_task_handle.read()
+        self.board_window.run_time.append(time.monotonic_ns() / 1e6)
+        self.board_window.voltage_read_history.append(self.voltage_read)
         self.ao_task_handle.write(self.voltage_read * 0.5)
 
     def get_time_left(self):
