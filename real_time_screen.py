@@ -1,4 +1,5 @@
 # import everything from tkinter module
+import math
 import random
 import time
 from tkinter import *
@@ -36,6 +37,23 @@ class ControllerWindow:
         self.voltage_slider.set(8.0)
 
     def animate(self, _):
+        ax1 = self.fig.get_axes()[0]
+        ax1.cla()
+        ax1.plot(self.run_time, self.voltage_set_history, label='Voltage Set', color='blue')
+        ax1.plot(self.run_time, self.voltage_read_history, label='Voltage Read', color='red')
+        ax1.set_ylim(0, 10)
+
+        if self.run_time[-1] <= 10:
+            ax1.set_xlim(0, 10)
+        else:
+            ax1.set_xlim(0, math.ceil(self.run_time[-1]))
+        ax1.set_xlabel('Time (s)')
+        ax1.legend(loc='upper right')
+
+    def animate_test(self, _):
+        """
+        Para testes, use este método no FuncAnimation
+        """
         current_time = (time.monotonic_ns() - self.start_time) / 1e9
         self.run_time.append(current_time)
         self.voltage_set_history.append(self.voltage_slider.get())
@@ -49,7 +67,7 @@ class ControllerWindow:
         if current_time <= 10:
             ax1.set_xlim(0, 10)
         else:
-            ax1.set_xlim(0, current_time)
+            ax1.set_xlim(0, math.ceil(current_time))
         ax1.set_xlabel('Time (s)')
         ax1.legend(loc='upper right')
 
